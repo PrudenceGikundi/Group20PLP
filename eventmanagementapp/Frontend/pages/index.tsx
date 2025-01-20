@@ -165,6 +165,11 @@ export default function Home() {
                           <p className="text-gray-600">Venue: {event.venue}</p>
                         </div>
 
+                        <div className="mb-4 text-gray-600">
+                          <p>Cost per ticket: KSh {event.price}</p>
+                          <p>Total: KSh {event.price * ticketCount}</p>
+                        </div>
+
                         <p className="text-gray-700 mb-4">Enter your M-Pesa number to pay and confirm your booking.</p>
                         <input
                           type="text"

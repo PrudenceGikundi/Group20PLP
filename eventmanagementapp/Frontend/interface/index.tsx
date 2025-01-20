@@ -78,6 +78,7 @@ export interface Event {
   cost: number;
   venue: string;
   time: string;
+  price: number;
   ticketCount: number;
   totalTickets: number;  // Total available tickets
   ticketsSold: number;   // Total tickets sold
