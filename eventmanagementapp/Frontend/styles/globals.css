@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* In your globals.css or Tailwind config */
+@layer utilities {
+  .gradient-bg {
+    background: linear-gradient(to bottom, #FEC8D8, #5275ad);
+  }
+}
+body.dark {
+  background-color: #1a202c; /* bg-gray-900 */
+  color: #ffffff; /* text-white */
+}
+
+a.dark {
+  color: #fbcfe8; /* text-pink-200 */
+}
