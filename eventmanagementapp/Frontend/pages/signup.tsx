@@ -11,25 +11,36 @@ const Signup = () => {
   const [error, setError] = useState<string | null>(null);
 
   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+  e.preventDefault();
+  try {
+    const response = await fetch("http://localhost:3000/api/auth/register", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
 
-      if (response.ok) {
-        setSuccess(true);
-        setFormData({ name: "", email: "", password: "" });
-      } else {
+    if (response.ok) {
+      setSuccess(true);
+      setFormData({ name: "", email: "", password: "" });
+    } else {
+      // Try to parse JSON, and if fails, log the raw response
+      try {
         const data = await response.json();
+        console.error("Error response from server:", data);
         setError(data.message || "Failed to sign up.");
+      } catch (jsonError) {
+        console.error("Failed to parse JSON:", jsonError);
+        const rawText = await response.text();
+        console.error("Raw server response:", rawText);
+        setError("An error occurred. Please try again.");
       }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
     }
-  };
+  } catch (err) {
+    console.error("Error caught in frontend:", err);
+    setError("An error occurred. Please try again.");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-white flex justify-center items-center py-8">

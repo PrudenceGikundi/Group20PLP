@@ -9,10 +9,29 @@ const Login = () => {
     password: "",
   });
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle login logic here
-  };
+ const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log("Submitting form..."); // Debugging line
+
+  try {
+    const response = await fetch("http://localhost:3000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      console.log("Login successful", data);
+      // Redirect user or save token
+    } else {
+      console.error("Login failed");
+      // Handle errors returned by the backend
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+  }
+};
 
   return (
     <>

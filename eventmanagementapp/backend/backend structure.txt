@@ -1,0 +1,21 @@
+backend/
+├── config/
+│   ├── db.js
+│   └── mpesa.js
+├── controllers/
+│   ├── auth.js
+│   └── payment.js
+├── middleware/
+│   ├── auth.js
+│   ├── payment.js
+│   ├── validation.js
+├── models/
+│   ├── userModel.js
+│   ├── eventModel.js
+│   └── paymentModel.js
+├── routes/
+│   ├── auth.js
+│   ├── payment.js
+├── .env
+├── server.js
+└── package.json
