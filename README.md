@@ -7,7 +7,7 @@
 
 ---
 
-## Repository Structure  
+## Repository Structure (see inside eventmanagementapp folder for more details).         
 
 ```
 GROUP20PLP/
@@ -47,7 +47,7 @@ Ensure the following tools are installed on your system:
 - **Node.js**: Version 14 or higher.  
 - **NPM**: Comes with Node.js.  
 - **Git**: For version control.  
-- **MongoDB**: Required for backend data storage.  
+- **MySql**: Required for backend data storage.  
 - **M-Pesa Developer Account**: To handle payment integrations.  
 
 ---
@@ -56,7 +56,7 @@ Ensure the following tools are installed on your system:
 
 ### 1. Clone the Repository  
 ```bash  
-git clone https://github.com/<your-username>/GROUP20PLP.git  
+git clone https://github.com/PrudenceGikundi/Group20PLP/tree/backend  
 cd GROUP20PLP  
 ```  
 
