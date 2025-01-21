@@ -1,21 +1,17 @@
 backend/
-├── config/
-│   ├── db.js
-│   └── mpesa.js
-├── controllers/
-│   ├── auth.js
-│   └── payment.js
-├── middleware/
-│   ├── auth.js
-│   ├── payment.js
-│   ├── validation.js
-├── models/
-│   ├── userModel.js
-│   ├── eventModel.js
-│   └── paymentModel.js
-├── routes/
-│   ├── auth.js
-│   ├── payment.js
-├── .env
-├── server.js
-└── package.json
+├── config/                  # Configuration files
+│   ├── db.js                # MySQL database configuration
+│   └── mpesa.js             # M-Pesa API configuration
+├── controllers/             # API business logic
+│   ├── auth.js              # User authentication logic
+│   └── payment.js           # Payment processing logic
+├── middleware/              # Middleware for validation and authentication
+│   ├── auth.js              # JWT authentication
+│   ├── payment.js           # Payment validation
+│   ├── validation.js        # General request validation
+├── routes/                  # API routes
+│   ├── auth.js              # Routes for user authentication
+│   ├── payment.js           # Routes for payment
+├── .env                     # Environment variables
+├── server.js                # Entry point for the application
+└── package.json             # Dependencies and scripts
