@@ -26,18 +26,19 @@ export default function Admin() {
     time: '',
     totalTickets: 0,
     bookedTickets: 0,
-    category: 'Music', // Default category
+    category: 'Music',
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingEventId, setEditingEventId] = useState<number | null>(null);
   const [errors, setErrors] = useState<string[]>([]);
-  const [categories] = useState<string[]>(['Music', 'Sports', 'Workshop', 'Seminar']); // Example categories
+  const [categories] = useState<string[]>(['Music', 'Sports', 'Workshop', 'Seminar']);
 
   // Fetch events from the backend
   const fetchEvents = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/events');
+      const response = await fetch('/api/events');
+      if (!response.ok) throw new Error('Failed to fetch events');
       const data = await response.json();
       setEvents(data);
     } catch (error) {
@@ -73,7 +74,7 @@ export default function Admin() {
     };
 
     try {
-      const response = await fetch('http://localhost:5000/api/events', {
+      const response = await fetch('/api/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -83,7 +84,7 @@ export default function Admin() {
 
       if (!response.ok) throw new Error('Failed to create event');
       const data = await response.json();
-      setEvents([data, ...events]); // Use the backend response for the new event with an `id`
+      setEvents([data, ...events]); // Update state with the new event
       resetForm();
     } catch (error) {
       console.error('Error creating event:', error);
@@ -101,7 +102,7 @@ export default function Admin() {
       };
 
       try {
-        const response = await fetch(`http://localhost:5000/api/events/${editingEventId}`, {
+        const response = await fetch(`/api/events/${editingEventId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -111,11 +112,7 @@ export default function Admin() {
 
         if (!response.ok) throw new Error('Failed to update event');
         const data = await response.json();
-        setEvents(
-          events.map((event) =>
-            event.id === editingEventId ? { ...data } : event
-          )
-        );
+        setEvents(events.map((event) => event.id === editingEventId ? { ...data } : event));
         resetForm();
       } catch (error) {
         console.error('Error updating event:', error);
@@ -124,17 +121,16 @@ export default function Admin() {
   };
 
   const deleteEvent = async (id: number) => {
+    const confirmDelete = window.confirm('Are you sure you want to delete this event?');
+    if (!confirmDelete) return;
+
     try {
-      const response = await fetch(`http://localhost:5000/api/events/${id}`, {
+      const response = await fetch(`/api/events/${id}`, {
         method: 'DELETE',
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to delete event');
-      }
-
-      // Remove the event from the state
-      setEvents(events.filter((event) => event.id !== id));
+      if (!response.ok) throw new Error('Failed to delete event');
+      setEvents(events.filter((event) => event.id !== id)); // Remove event from state
     } catch (error) {
       console.error('Error deleting event:', error);
       alert('Failed to delete the event, please try again later.');
@@ -157,7 +153,7 @@ export default function Admin() {
 
   const handleEdit = (event: Event) => {
     setEditingEventId(event.id);
-    const { id, ...rest } = event; // Exclude `id` for the editable form
+    const { id, ...rest } = event;
     setNewEvent(rest);
     setImagePreview(event.imageUrl || null);
     setShowForm(true);
@@ -174,7 +170,7 @@ export default function Admin() {
       time: '',
       totalTickets: 0,
       bookedTickets: 0,
-      category: 'Music', // Default value
+      category: 'Music',
     });
     setImagePreview(null);
     setShowForm(false);
@@ -242,6 +238,7 @@ export default function Admin() {
           <div className="bg-pink-200 text-gray-600 p-8 rounded shadow-lg w-full max-w-3xl h-auto overflow-y-auto max-h-[80vh]">
             <h2 className="text-2xl font-semibold mb-4 text-gray-600">{editingEventId ? 'Edit Event' : 'Create Event'}</h2>
             <form onSubmit={editingEventId ? updateEvent : createEvent} className="space-y-6">
+              {/* Title Field */}
               <div className="flex flex-col">
                 <label className="font-semibold">Title</label>
                 <input
@@ -252,6 +249,8 @@ export default function Admin() {
                   placeholder="Event Title"
                 />
               </div>
+
+              {/* Description Field */}
               <div className="flex flex-col">
                 <label className="font-semibold">Description</label>
                 <textarea
@@ -261,6 +260,8 @@ export default function Admin() {
                   placeholder="Event Description"
                 />
               </div>
+
+              {/* Date Field */}
               <div className="flex flex-col">
                 <label className="font-semibold">Date</label>
                 <input
@@ -270,15 +271,8 @@ export default function Admin() {
                   className="border rounded p-2"
                 />
               </div>
-              <div className="flex flex-col">
-                <label className="font-semibold">Time</label>
-                <input
-                  type="time"
-                  value={newEvent.time}
-                  onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
-                  className="border rounded p-2"
-                />
-              </div>
+
+              {/* Venue Field */}
               <div className="flex flex-col">
                 <label className="font-semibold">Venue</label>
                 <input
@@ -289,26 +283,43 @@ export default function Admin() {
                   placeholder="Event Venue"
                 />
               </div>
+
+              {/* Time Field */}
               <div className="flex flex-col">
-                <label className="font-semibold">Cost</label>
+                <label className="font-semibold">Time</label>
                 <input
-                  type="number"
-                  value={newEvent.cost}
-                  onChange={(e) => setNewEvent({ ...newEvent, cost: +e.target.value })}
+                  type="time"
+                  value={newEvent.time}
+                  onChange={(e) => setNewEvent({ ...newEvent, time: e.target.value })}
                   className="border rounded p-2"
-                  placeholder="Event Cost"
                 />
               </div>
+
+              {/* Total Tickets Field */}
               <div className="flex flex-col">
                 <label className="font-semibold">Total Tickets</label>
                 <input
                   type="number"
                   value={newEvent.totalTickets}
-                  onChange={(e) => setNewEvent({ ...newEvent, totalTickets: +e.target.value })}
+                  onChange={(e) => setNewEvent({ ...newEvent, totalTickets: Number(e.target.value) })}
                   className="border rounded p-2"
                   placeholder="Total Tickets"
                 />
               </div>
+
+              {/* Cost Field */}
+              <div className="flex flex-col">
+                <label className="font-semibold">Cost</label>
+                <input
+                  type="number"
+                  value={newEvent.cost}
+                  onChange={(e) => setNewEvent({ ...newEvent, cost: Number(e.target.value) })}
+                  className="border rounded p-2"
+                  placeholder="Event Cost"
+                />
+              </div>
+
+              {/* Category Field */}
               <div className="flex flex-col">
                 <label className="font-semibold">Category</label>
                 <select
@@ -323,18 +334,21 @@ export default function Admin() {
                   ))}
                 </select>
               </div>
+
+              {/* Image Upload */}
               <div className="flex flex-col">
-                <label className="font-semibold">Image</label>
+                <label className="font-semibold">Event Image</label>
                 <input
                   type="file"
                   onChange={handleImageChange}
                   className="border rounded p-2"
                 />
                 {imagePreview && (
-                  <img src={imagePreview} alt="Preview" className="mt-2 h-24 object-cover rounded" />
+                  <img src={imagePreview} alt="Event Preview" className="mt-2 w-32 h-32 object-cover rounded" />
                 )}
               </div>
 
+              {/* Submit/Cancel Buttons */}
               <div className="flex justify-between">
                 <button
                   type="button"
@@ -347,19 +361,21 @@ export default function Admin() {
                   type="submit"
                   className="bg-gray-500 text-white px-6 py-2 rounded"
                 >
-                  {editingEventId ? 'Update' : 'Create'} Event
+                  {editingEventId ? 'Update' : 'Create'}
                 </button>
               </div>
-              {errors.length > 0 && (
-                <div className="mt-4 text-red-500">
-                  <ul>
-                    {errors.map((error, index) => (
-                      <li key={index}>{error}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
             </form>
+
+            {/* Display errors */}
+            {errors.length > 0 && (
+              <div className="mt-4">
+                <ul className="text-red-500">
+                  {errors.map((error, index) => (
+                    <li key={index}>{error}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       )}

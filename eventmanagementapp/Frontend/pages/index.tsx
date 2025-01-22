@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Event } from "@/interface";
 import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
+import BookTicket from "@/components/common/book-ticket";  // Import the BookTicket component
 
 export default function Home() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -9,11 +10,6 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedTime, setSelectedTime] = useState<string>('Any');
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [mpesaNumber, setMpesaNumber] = useState<string>('');
-  const [ticketCount, setTicketCount] = useState<number>(1); // To hold the ticket count selected by the user
-
-  // Define the reference for the card (pop-up)
-  const cardRef = useRef<HTMLDivElement | null>(null);
 
   // Dummy categories for illustration (You can replace it with actual categories from your database)
   const categories = ['All', 'Sports', 'Music', 'Workshop'];
@@ -46,33 +42,8 @@ export default function Home() {
     });
   };
 
-  const handleMpesaPayment = () => {
-    if (!mpesaNumber) {
-      alert("Please enter your M-Pesa number to proceed.");
-      return;
-    }
-
-    // Logic to decrease ticket count
-    if (selectedEvent) {
-      const updatedEvent = { ...selectedEvent, ticketCount: selectedEvent.ticketCount - ticketCount };
-      setSelectedEvent(updatedEvent);
-    }
-
-    alert(`Payment initiated for event ${selectedEvent?.title} using M-Pesa number: ${mpesaNumber}. You have booked ${ticketCount} ticket(s).`);
-  };
-
-  const handleCloseCard = () => {
-    setSelectedEvent(null); // This removes the event card from the screen.
-  };
-
-  const handleClickOutside = (e: React.MouseEvent) => {
-    if (cardRef.current && !cardRef.current.contains(e.target as Node)) {
-      handleCloseCard();
-    }
-  };
-
   return (
-    <div className="gradient-bg min-h-screen" onClick={handleClickOutside}>
+    <div className="gradient-bg min-h-screen">
       <Header />
       <div className="flex flex-col justify-center items-center text-center py-12">
         {/* Welcome Message */}
@@ -154,52 +125,10 @@ export default function Home() {
 
                   {/* Show event details when selected */}
                   {selectedEvent?.id === event.id && (
-                    <div ref={cardRef} className="absolute top-0 left-0 right-0 bottom-0 bg-gray-900 bg-opacity-50 flex justify-center items-center rounded p-4">
-                      <div className="bg-white p-6 rounded-lg shadow-lg w-80 relative">
-                        <h3 className="text-xl font-semibold mb-4">Book Event: {event.title}</h3>
-                        <div className="mb-4">
-                          <h4 className="font-semibold">Event Details</h4>
-                          <p>{event.description}</p>
-                          <p className="text-gray-600">Date: {event.date}</p>
-                          <p className="text-gray-600">Time: {event.time}</p>
-                          <p className="text-gray-600">Venue: {event.venue}</p>
-                        </div>
-
-                        <div className="mb-4 text-gray-600">
-                          <p>Cost per ticket: KSh {event.price}</p>
-                          <p>Total: KSh {event.price * ticketCount}</p>
-                        </div>
-
-                        <p className="text-gray-700 mb-4">Enter your M-Pesa number to pay and confirm your booking.</p>
-                        <input
-                          type="text"
-                          value={mpesaNumber}
-                          onChange={(e) => setMpesaNumber(e.target.value)}
-                          placeholder="Enter your M-Pesa number"
-                          className="p-3 border border-gray-300 rounded mb-4 w-full"
-                        />
-
-                        {/* Ticket Quantity Input */}
-                        <div className="mb-4">
-                          <label htmlFor="ticketCount" className="block text-sm text-gray-600">Tickets</label>
-                          <input
-                            id="ticketCount"
-                            type="number"
-                            min="1"
-                            value={ticketCount}
-                            onChange={(e) => setTicketCount(Math.max(1, parseInt(e.target.value)))}
-                            className="p-3 border border-gray-300 rounded w-full"
-                          />
-                        </div>
-
-                        <button
-                          onClick={handleMpesaPayment}
-                          className="w-full bg-green-500 text-white p-3 rounded-md hover:bg-green-600"
-                        >
-                          Pay with M-Pesa
-                        </button>
-                      </div>
-                    </div>
+                    <BookTicket
+                      selectedEvent={selectedEvent}
+                      onClose={() => setSelectedEvent(null)} // Close event details
+                    />
                   )}
                 </div>
               ))}

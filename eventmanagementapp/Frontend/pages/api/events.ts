@@ -1,123 +1,60 @@
-// events.ts
+// // pages/api/events.ts
+// import { NextApiRequest, NextApiResponse } from 'next';
 
-export interface Event {
-  id: number;
-  title: string;
-  description: string;
-  date: string;
-  imageUrl?: string;
-  cost: number;
-  venue: string;
-  time: string;
-  totalTickets: number;
-  bookedTickets: number;
-}
+// // Dummy database for events (replace with actual DB interaction)
+// let events = [
+//   { id: 1, title: 'Tech Conference', description: 'A conference for tech enthusiasts', date: '2025-03-25' },
+//   // Add other events here
+// ];
 
-// API base URL
-const API_BASE_URL = "http://localhost:5000/api/events";
+// // Helper function to simulate DB interaction
+// const updateDatabase = (events: any[]) => {
+//   // Here integrate with your actual database (e.g., MongoDB, MySQL, etc.)
+// };
 
-/**
- * Fetch all events from the backend.
- * @returns {Promise<Event[]>} A promise that resolves to an array of events.
- */
-export const fetchEvents = async (): Promise<Event[]> => {
-  try {
-    const response = await fetch(API_BASE_URL);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch events: ${response.statusText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching events:", error);
-    throw error;
-  }
-};
+// export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+//   switch (req.method) {
+//     case 'GET':
+//       // Fetch events from the database
+//       res.status(200).json(events);
+//       break;
 
-/**
- * Fetch a single event by ID from the backend.
- * @param id The ID of the event to fetch.
- * @returns {Promise<Event>} A promise that resolves to the fetched event.
- */
-export const fetchEventById = async (id: number): Promise<Event> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/${id}`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch event with ID ${id}: ${response.statusText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching event:", error);
-    throw error;
-  }
-};
+//     case 'POST':
+//       // Add an event (Admin only)
+//       const { title, description, date } = req.body;
+//       const newEvent = { id: events.length + 1, title, description, date };
+//       events.push(newEvent);
+//       updateDatabase(events);
+//       res.status(201).json(newEvent);
+//       break;
 
-/**
- * Create a new event.
- * @param event The event data to create.
- * @returns {Promise<Event>} A promise that resolves to the created event.
- */
-export const createEvent = async (event: Omit<Event, "id">): Promise<Event> => {
-  try {
-    const response = await fetch(API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(event),
-    });
-    if (!response.ok) {
-      throw new Error("Failed to create event");
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error creating event:", error);
-    throw error;
-  }
-};
+//     case 'PUT':
+//       // Update an event (Admin only)
+//       const { id, updatedTitle, updatedDescription, updatedDate } = req.body;
+//       const eventIndex = events.findIndex((event) => event.id === id);
+//       if (eventIndex > -1) {
+//         events[eventIndex] = {
+//           ...events[eventIndex],
+//           title: updatedTitle,
+//           description: updatedDescription,
+//           date: updatedDate,
+//         };
+//         updateDatabase(events);
+//         res.status(200).json(events[eventIndex]);
+//       } else {
+//         res.status(404).json({ error: 'Event not found' });
+//       }
+//       break;
 
-/**
- * Update an existing event by ID.
- * @param id The ID of the event to update.
- * @param event The updated event data.
- * @returns {Promise<Event>} A promise that resolves to the updated event.
- */
-export const updateEvent = async (
-  id: number,
-  event: Partial<Omit<Event, "id">>
-): Promise<Event> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(event),
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to update event with ID ${id}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error updating event:", error);
-    throw error;
-  }
-};
+//     case 'DELETE':
+//       // Delete an event (Admin only)
+//       const eventIdToDelete = parseInt(req.query.id as string);
+//       events = events.filter((event) => event.id !== eventIdToDelete);
+//       updateDatabase(events);
+//       res.status(204).end();
+//       break;
 
-/**
- * Delete an event by ID.
- * @param id The ID of the event to delete.
- * @returns {Promise<void>} A promise that resolves when the event is deleted.
- */
-export const deleteEvent = async (id: number): Promise<void> => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error(`Failed to delete event with ID ${id}`);
-    }
-  } catch (error) {
-    console.error("Error deleting event:", error);
-    throw error;
-  }
-};
+//     default:
+//       res.status(405).json({ error: 'Method Not Allowed' });
+//   }
+// }

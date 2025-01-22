@@ -1,71 +1,73 @@
 import { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/router";
 
-const Signup = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-  });
-  const [success, setSuccess] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+const SignUp = () => {
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [error, setError] = useState<string>("");
+  const router = useRouter();
 
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+  const handleSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
 
-      if (response.ok) {
-        setSuccess(true);
-        setFormData({ name: "", email: "", password: "" });
-      } else {
-        const data = await response.json();
-        setError(data.message || "Failed to sign up.");
-      }
-    } catch (err) {
-      setError("An error occurred. Please try again.");
+    // Check if name, email, and password are provided
+    if (!name || !email || !password) {
+      setError("Please fill in all fields.");
+      return;
     }
+
+    // Check if the email is already signed up
+    const existingUser = localStorage.getItem("user");
+    if (existingUser) {
+      const parsedUser = JSON.parse(existingUser);
+      if (parsedUser.email === email) {
+        alert("You are already signed up. Please log in.");
+        router.push("/login");
+        return;
+      }
+    }
+
+    // Save user data in localStorage
+    const user = { name, email, password };
+    localStorage.setItem("user", JSON.stringify(user));
+
+    // Redirect to login page after successful sign-up
+    router.push("/login");
   };
 
   return (
     <div className="min-h-screen bg-white flex justify-center items-center py-8">
       <form
-        onSubmit={handleSignup}
+        onSubmit={handleSubmit}
         className="bg-pink-200 p-8 rounded-lg shadow-lg w-96"
       >
         <h2 className="text-2xl font-bold text-gray-600 mb-4">Sign Up</h2>
-        {success && (
-          <p className="text-green-500 mb-4">
-            Sign-up successful! <Link href="/login">Log in here.</Link>
-          </p>
-        )}
+
         {error && <p className="text-red-500 mb-4">{error}</p>}
+
         <input
           type="text"
           placeholder="Full Name"
           className="w-full p-2 mb-4 border border-gray-300 rounded"
-          value={formData.name}
-          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           required
         />
         <input
           type="email"
           placeholder="Email"
           className="w-full p-2 mb-4 border border-gray-300 rounded"
-          value={formData.email}
-          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           required
         />
         <input
           type="password"
           placeholder="Password"
           className="w-full p-2 mb-4 border border-gray-300 rounded"
-          value={formData.password}
-          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
           required
         />
         <button
@@ -77,9 +79,9 @@ const Signup = () => {
         <div className="text-center mt-4">
           <p className="text-gray-600">
             Already have an account?{" "}
-            <Link href="/login" legacyBehavior>
-              <a className="text-blue-600 hover:text-blue-800">Login</a>
-            </Link>
+            <a href="/login" className="text-blue-600">
+              Login
+            </a>
           </p>
         </div>
       </form>
@@ -87,4 +89,4 @@ const Signup = () => {
   );
 };
 
-export default Signup;
+export default SignUp;
